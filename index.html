@@ -1,0 +1,1095 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>قائمة اتصال اليوم</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F2F5F9;
+    --surface: #FFFFFF;
+    --ink: #142033;
+    --muted: #5A6779;
+    --line: #DCE3EC;
+    --brand: #1E4E9C;
+    --brand-ink: #FFFFFF;
+
+    --yes: #14905A;
+    --yes-ink: #0C6B41;
+    --yes-tint: #E4F5EB;
+    --no: #D0433D;
+    --no-ink: #A82F2A;
+    --no-tint: #FCEAE9;
+    --na: #F0B429;
+    --na-ink: #8A5A00;
+    --na-tint: #FDF4D8;
+
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0E1520; --surface: #172233; --ink: #EAF0F7; --muted: #9AA8BA; --line: #26364D;
+      --brand: #5B8FE0; --brand-ink: #0B1220;
+      --yes: #2DBE80; --yes-ink: #5FD9A3; --yes-tint: #123526;
+      --no: #E5645E; --no-ink: #F08A85; --no-tint: #3A1B1B;
+      --na: #F0B429; --na-ink: #F3C862; --na-tint: #3A2F10;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0E1520; --surface: #172233; --ink: #EAF0F7; --muted: #9AA8BA; --line: #26364D;
+    --brand: #5B8FE0; --brand-ink: #0B1220;
+    --yes: #2DBE80; --yes-ink: #5FD9A3; --yes-tint: #123526;
+    --no: #E5645E; --no-ink: #F08A85; --no-tint: #3A1B1B;
+    --na: #F0B429; --na-ink: #F3C862; --na-tint: #3A2F10;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-text-size-adjust: 100%;
+  }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  [hidden] { display: none !important; }
+  :focus-visible { outline: 3px solid var(--brand); outline-offset: 2px; }
+
+  .wrap { max-width: 640px; margin: 0 auto; padding: 0 14px 40px; }
+
+  /* ---------- Upload ---------- */
+  .intro { padding: 36px 2px 18px; }
+  .intro h1 { margin: 0 0 6px; font-size: 28px; line-height: 1.3; font-weight: 700; }
+  .intro p { margin: 0; color: var(--muted); }
+
+  .drop {
+    display: block; margin-top: 8px;
+    border: 2px dashed var(--line); border-radius: 18px;
+    background: var(--surface); padding: 34px 18px; text-align: center;
+    cursor: pointer; transition: border-color .15s, background .15s;
+  }
+  .drop:hover, .drop.over { border-color: var(--brand); }
+  .drop input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .drop:focus-within { outline: 3px solid var(--brand); outline-offset: 2px; }
+  .drop .big { font-size: 19px; font-weight: 600; margin: 10px 0 2px; }
+  .drop .small { color: var(--muted); font-size: 14px; }
+  .drop svg { width: 44px; height: 44px; color: var(--brand); }
+  .notes { margin: 16px 2px 0; padding: 0; list-style: none; color: var(--muted); font-size: 14px; }
+  .notes li { padding: 3px 0; }
+
+  /* ---------- Mapping ---------- */
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; margin-top: 8px; }
+  .panel h2 { margin: 0 0 4px; font-size: 20px; }
+  .panel > p { margin: 0 0 14px; color: var(--muted); font-size: 14px; }
+  .field { display: block; margin-bottom: 12px; }
+  .field span { display: block; font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .field select {
+    width: 100%; min-height: 46px; padding: 8px 12px; font: inherit;
+    background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 12px;
+  }
+  .preview { font-size: 13px; color: var(--muted); margin: 2px 0 14px; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 48px; padding: 10px 20px; border-radius: 14px; border: 0;
+    background: var(--brand); color: var(--brand-ink); font-weight: 600; font-size: 16px;
+  }
+  .btn.block { width: 100%; }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+  .btn.small { min-height: 40px; padding: 6px 14px; font-size: 14px; border-radius: 12px; }
+  .btn svg { width: 20px; height: 20px; }
+
+  /* ---------- Work view header ---------- */
+  .bar {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+    background: var(--bg); padding: 12px 0 10px;
+    border-bottom: 1px solid var(--line);
+    margin: 0 -14px; padding-inline: 14px;
+  }
+  .bar-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .bar h1 { margin: 0; font-size: 20px; line-height: 1.3; }
+  .bar .sub { color: var(--muted); font-size: 13px; margin: 0; }
+  .prog { display: flex; height: 10px; border-radius: 6px; overflow: hidden; background: var(--line); margin: 10px 0 8px; }
+  .prog span { display: block; height: 100%; transition: width .25s ease; }
+  .prog .p-yes { background: var(--yes); }
+  .prog .p-no { background: var(--no); }
+  .prog .p-na { background: var(--na); }
+
+  .chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex: 0 0 auto; min-height: 36px; padding: 4px 12px; border-radius: 999px;
+    background: var(--surface); border: 1px solid var(--line); font-size: 14px; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .chip b { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+  .dot.yes { background: var(--yes); } .dot.no { background: var(--no); } .dot.na { background: var(--na); }
+
+  /* ---------- Cards ---------- */
+  .list { display: grid; gap: 10px; margin-top: 12px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--line);
+    border-inline-start: 6px solid var(--line);
+    border-radius: 16px; padding: 12px 14px 12px;
+    transition: background .2s, border-color .2s;
+  }
+  .card.s-yes { background: var(--yes-tint); border-inline-start-color: var(--yes); }
+  .card.s-no { background: var(--no-tint); border-inline-start-color: var(--no); }
+  .card.s-na { background: var(--na-tint); border-inline-start-color: var(--na); }
+
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .who { min-width: 0; }
+  .name { margin: 0; font-size: 18px; line-height: 1.4; font-weight: 700; overflow-wrap: anywhere; }
+  .s-yes .name { color: var(--yes-ink); }
+  .s-no .name { color: var(--no-ink); }
+  .s-na .name { color: var(--na-ink); }
+  .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; color: var(--muted); font-size: 14px; }
+  .meta .plan { padding: 0 8px; border-radius: 8px; background: var(--bg); border: 1px solid var(--line); color: var(--ink); font-size: 13px; }
+  .meta .ph { direction: ltr; unicode-bidi: embed; font-variant-numeric: tabular-nums; }
+
+  .call {
+    flex: none; display: inline-flex; align-items: center; gap: 6px;
+    min-height: 46px; padding: 0 16px; border-radius: 14px; text-decoration: none;
+    background: var(--brand); color: var(--brand-ink); font-weight: 600;
+  }
+  .call svg { width: 20px; height: 20px; }
+  .call[aria-disabled="true"] { opacity: .4; pointer-events: none; }
+
+  .acts { display: flex; gap: 8px; margin-top: 10px; }
+  .act {
+    min-height: 40px; padding: 0 14px; border-radius: 999px;
+    background: var(--surface); border: 2px solid; font-size: 14px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .act .dot { width: 12px; height: 12px; }
+  .act.no { border-color: var(--no); color: var(--no-ink); }
+  .act.yes { border-color: var(--yes); color: var(--yes-ink); }
+  .act.na { border-color: var(--na); color: var(--na-ink); }
+  .act.no .dot { background: var(--no); } .act.yes .dot { background: var(--yes); } .act.na .dot { background: var(--na); }
+  .act[aria-pressed="true"].no { background: var(--no); color: #fff; }
+  .act[aria-pressed="true"].yes { background: var(--yes); color: #fff; }
+  .act[aria-pressed="true"].na { background: var(--na); color: #2B1E00; }
+  .act[aria-pressed="true"] .dot { background: currentColor; }
+  .stamp { margin-inline-start: auto; align-self: center; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .empty { text-align: center; color: var(--muted); padding: 34px 0; }
+
+  /* ---------- Export ---------- */
+  .export { margin-top: 22px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 6px 0 12px; font-size: 14px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 18px; height: 12px; border-radius: 3px; display: inline-block; }
+  .check { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; font-size: 15px; min-height: 36px; }
+  .check input { width: 20px; height: 20px; accent-color: var(--brand); }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+
+  .toast {
+    position: fixed; inset-inline: 14px; bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    max-width: 480px; margin: 0 auto; z-index: 20;
+    background: var(--ink); color: var(--bg); border-radius: 14px; padding: 12px 16px; font-size: 15px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.25);
+  }
+
+  :root { --cb:#2F6FD6; --cb-ink:#1E4E9C; --cb-tint:#E3EDFB; --wa:#1FA855; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --cb:#6EA2F0; --cb-ink:#9CC0F7; --cb-tint:#16294A; } }
+  :root[data-theme="dark"] { --cb:#6EA2F0; --cb-ink:#9CC0F7; --cb-tint:#16294A; }
+  .prog .p-cb { background: var(--cb); }
+  .dot.cb { background: var(--cb); }
+  .card.s-cb { background: var(--cb-tint); border-inline-start-color: var(--cb); }
+  .s-cb .name { color: var(--cb-ink); }
+  .act.cb { border-color: var(--cb); color: var(--cb-ink); }
+  .act.cb .dot { background: var(--cb); }
+  .act[aria-pressed="true"].cb { background: var(--cb); color: #fff; }
+  .acts { flex-wrap: wrap; }
+  .act { min-height: 44px; }
+  .act.wa { border-color: var(--wa); color: var(--yes-ink); text-decoration: none; }
+  .act.note { border-color: var(--line); color: var(--muted); }
+  .card.hl { outline: 4px solid var(--brand); outline-offset: 2px; }
+  .badge-wa { color: var(--yes-ink); font-size: 13px; }
+  .note-row { margin-top: 8px; }
+  .note-row input, .search, .field input, .field textarea {
+    width: 100%; min-height: 44px; padding: 8px 12px; font: inherit;
+    background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 12px;
+  }
+  .search { margin-top: 8px; }
+  .xnote { margin-top: 8px; padding: 8px 12px; border-radius: 12px; background: var(--na-tint); border-inline-start: 4px solid var(--na); color: var(--ink); font-size: 15px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .xnote b { color: var(--na-ink); }
+  .xnote { display: block; }
+  .xnote textarea { display: block; width: 100%; margin-top: 4px; padding: 8px 10px; font: inherit; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 10px; resize: none; overflow: hidden; }
+  .home-btns { display: grid; gap: 14px; margin-top: 10px; }
+  .btn.big { min-height: 68px; font-size: 19px; border-radius: 18px; }
+  .prog.done { box-shadow: 0 0 0 3px var(--yes); }
+  .cf { position: fixed; top: -14px; width: 8px; height: 14px; border-radius: 2px; z-index: 50; pointer-events: none; animation: cf-fall 2.1s ease-in forwards; }
+  @keyframes cf-fall { to { transform: translateY(108vh) rotate(600deg); } }
+  .modal { position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,.5); display: flex; align-items: flex-end; justify-content: center; }
+  .sheet { background: var(--surface); width: 100%; max-width: 640px; max-height: 92%; overflow: auto; border-radius: 22px 22px 0 0; padding: 20px 18px calc(18px + env(safe-area-inset-bottom, 0px)); }
+  .sheet h2 { margin: 0; font-size: 22px; }
+  .sheet .when { margin: 0 0 4px; color: var(--muted); font-size: 14px; }
+  .big-n { font-size: 40px; font-weight: 700; font-variant-numeric: tabular-nums; margin: 6px 0; }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0 14px; }
+  .stat { border-radius: 14px; padding: 12px; border: 1px solid var(--line); background: var(--bg); }
+  .stat b { display: block; font-size: 28px; line-height: 1.2; font-variant-numeric: tabular-nums; }
+  .stat span { font-size: 14px; }
+  .stat.yes { background: var(--yes-tint); color: var(--yes-ink); }
+  .stat.no { background: var(--no-tint); color: var(--no-ink); }
+  .stat.na { background: var(--na-tint); color: var(--na-ink); }
+  .stat.cb { background: var(--cb-tint); color: var(--cb-ink); }
+  .lines { margin: 0 0 14px; padding: 0; list-style: none; font-size: 16px; }
+  .lines li { padding: 4px 0; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 0) Home -->
+  <section id="v-home">
+    <div class="intro">
+      <h1>قائمة اتصال اليوم</h1>
+      <p id="h-sub">ارفع ملف الإكسل من هاتفك أو حاسوبك، أو تابع اتصالات اليوم.</p>
+    </div>
+    <div class="home-btns">
+      <button class="btn big block" id="h-upload" type="button">رفع ملف إكسل</button>
+      <button class="btn big block ghost" id="h-calls" type="button">عرض اتصالات اليوم</button>
+      <input type="file" id="h-file" accept=".xlsx,.xls,.csv" hidden>
+    </div>
+    <label class="btn ghost small" style="cursor:pointer;margin-top:16px">استعادة نسخة احتياطية<input type="file" id="h-restore" accept=".json,application/json" hidden></label>
+  </section>
+
+  <!-- 1) Upload -->
+  <section id="v-upload" hidden>
+    <div class="intro">
+      <h1>قائمة اتصال اليوم</h1>
+      <p>ارفع ملف الإكسل لتتحول الأسماء إلى قائمة اتصال جاهزة.</p>
+    </div>
+    <label class="drop" id="drop">
+      <input type="file" id="file" accept=".xlsx,.xls,.csv">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+      <div class="big">اختر ملف الإكسل</div>
+      <div class="small">xlsx أو xls أو csv، أو اسحبه وأفلته هنا</div>
+    </label>
+    <ul class="notes">
+      <li>يُقرأ أول ورقة في الملف، والصف الأول يجب أن يكون عناوين الأعمدة.</li>
+      <li>الملف يُقرأ داخل متصفحك، وتُحفظ القائمة في حسابك الخاص فقط.</li>
+      <li>ارفع الملف من الحاسوب ثم افتح هذا الرابط على هاتفك بنفس حساب Claude، فتظهر القائمة وتتزامن النتائج تلقائياً.</li>
+      <li>تقدّمك يُحفظ تلقائيًا، فلو أغلقت الصفحة ترجع وتكمل.</li>
+    </ul>
+    <label class="btn ghost small" style="cursor:pointer;margin-top:12px">استعادة نسخة احتياطية<input type="file" id="u-restore" accept=".json,application/json" hidden></label>
+  </section>
+
+  <!-- 2) Column mapping -->
+  <section id="v-map" hidden>
+    <div class="intro" style="padding-bottom:10px">
+      <h1>تأكيد الأعمدة</h1>
+    </div>
+    <div class="panel">
+      <p id="map-info"></p>
+      <label class="field"><span>عمود الاسم</span><select id="m-name"></select></label>
+      <label class="field"><span>عمود رقم الهاتف</span><select id="m-phone"></select></label>
+      <label class="field"><span>عمود نوع الاشتراك</span><select id="m-type"></select></label>
+      <label class="field"><span>عمود ملاحظات المشترك (اختياري، وتعديلها يغيّر نفس الملاحظة في الملف)</span><select id="m-note"></select></label>
+      <label class="field"><span>مفتاح الدولة (اختياري، مثل 966 أو 20)</span><input id="m-cc" inputmode="numeric" placeholder="بدون"></label>
+      <label class="field"><span>رسالة واتساب ({الاسم} يُستبدل باسم العميل)</span><textarea id="m-msg" rows="3">مرحباً {الاسم}، هل ترغب بتفعيل الإنترنت لهذا الشهر؟ أجب بـ 1 للموافقة أو 2 للرفض.</textarea></label>
+      <div class="preview" id="m-preview"></div>
+      <button class="btn block" id="m-start" type="button">ابدأ الاتصال</button>
+      <div class="row"><button class="btn ghost small" id="m-back" type="button">اختيار ملف آخر</button></div>
+    </div>
+  </section>
+
+  <!-- 3) Work -->
+  <section id="v-work" hidden>
+    <header class="bar">
+      <div class="bar-top">
+        <div>
+          <h1 id="w-title">قائمة اتصال اليوم</h1>
+          <p class="sub" id="w-sub"></p>
+          <p class="sub" id="w-save"></p>
+          <div style="display:flex;gap:6px;margin-top:6px"><button class="btn ghost small" id="w-home" type="button">الرئيسية</button><button class="btn ghost small" id="w-sum" type="button">ملخص اليوم</button></div>
+        </div>
+        <button class="btn small" id="w-export-top" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"/><path d="M4 18v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1"/></svg>
+          تصدير
+        </button>
+      </div>
+      <div class="prog" aria-hidden="true"><span class="p-yes" id="p-yes"></span><span class="p-no" id="p-no"></span><span class="p-na" id="p-na"></span><span class="p-cb" id="p-cb"></span></div>
+      <div class="chips" id="chips" role="group" aria-label="تصفية القائمة"></div>
+      <input class="search" id="q" type="search" placeholder="بحث بالاسم أو الرقم" aria-label="بحث">
+    </header>
+
+    <div class="list" id="list"></div>
+
+    <div class="panel export">
+      <h2>تصدير النتائج</h2>
+      <p>يُنشأ ملف إكسل بنفس أعمدة قائمتك الأصلية، ويُلوَّن اسم كل عميل حسب النتيجة.</p>
+      <div class="legend">
+        <span><i style="background:var(--yes)"></i>وافق على الاشتراك</span>
+        <span><i style="background:var(--no)"></i>لم يوافق</span>
+        <span><i style="background:var(--na)"></i>لم يرد</span>
+        <span><i style="background:var(--cb)"></i>اتصل لاحقاً</span>
+      </div>
+      <label class="check"><input type="checkbox" id="inc-all"> تضمين من لم أتصل بهم بعد</label>
+      <button class="btn block" id="w-export" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4"/><path d="M4 18v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1"/></svg>
+        تنزيل ملف إكسل
+      </button>
+      <div class="row">
+        <button class="btn ghost small" id="w-backup" type="button">نسخة احتياطية</button>
+        <label class="btn ghost small" style="cursor:pointer">استعادة نسخة<input type="file" id="w-restore" accept=".json,application/json" hidden></label>
+        <button class="btn ghost small" id="w-reset" type="button">بدء بملف جديد</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+<div class="modal" id="sum" hidden role="dialog" aria-modal="true" aria-label="ملخص اليوم">
+  <div class="sheet">
+    <h2>ملخص اتصالات اليوم</h2>
+    <p class="when" id="sum-when"></p>
+    <div id="sum-body"></div>
+    <div class="row">
+      <button class="btn small" id="sum-share" type="button">مشاركة / حفظ صورة</button>
+      <button class="btn ghost small" id="sum-text" type="button">نسخ كنص</button>
+      <button class="btn ghost small" id="sum-close" type="button">إغلاق</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var KEY = 'calllist:v1';
+  var state = null;      // { file, header, rows, map:{name,phone,type}, st:{ idx:{s,t} } }
+  var pending = null;    // parsed file waiting for column confirmation
+  var filter = 'all';
+  var resetArmed = false, toastTimer = null, q = '';
+
+  function $(id) { return document.getElementById(id); }
+
+  /* ---------- storage (best effort) ---------- */
+  function lsGet() { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { return null; } }
+  function lsSet(mode) {
+    if (!state) return;
+    if (!mode) state.ts = Date.now();
+    var ok = false;
+    try { localStorage.setItem(KEY, JSON.stringify(state)); ok = true; } catch (e) {}
+    idbSet(state, function (good) { setSaveUi(ok || good); });
+    if (!mode) queuePush();
+  }
+  function lsDel() { try { localStorage.removeItem(KEY); } catch (e) {} idbDel(); }
+  function setSaveUi(ok) {
+    localOk = ok;
+    var el = $('w-save'); if (!el) return;
+    var t = ok ? 'محفوظ تلقائياً ✓' : 'تنبيه: المتصفح لا يحفظ تقدمك. نزّل نسخة احتياطية الآن.';
+    if (syncMode === 'ok') t += ' • متزامن مع أجهزتك ✓';
+    else if (syncMode === 'err') t += ' • تعذّرت المزامنة';
+    else if (syncMode === 'big') t += ' • الملف كبير على المزامنة';
+    el.textContent = t;
+    el.style.color = ok ? '' : 'var(--no-ink)';
+  }
+  function idbOpen(cb) {
+    try {
+      var req = indexedDB.open('calllist-db', 1);
+      req.onupgradeneeded = function () { req.result.createObjectStore('kv'); };
+      req.onsuccess = function () { cb(req.result); };
+      req.onerror = req.onblocked = function () { cb(null); };
+    } catch (e) { cb(null); }
+  }
+  function idbSet(val, done) {
+    idbOpen(function (db) {
+      if (!db) { if (done) done(false); return; }
+      try {
+        var tx = db.transaction('kv', 'readwrite'); tx.objectStore('kv').put(val, KEY);
+        tx.oncomplete = function () { db.close(); if (done) done(true); };
+        tx.onerror = tx.onabort = function () { db.close(); if (done) done(false); };
+      } catch (e) { if (done) done(false); }
+    });
+  }
+  function idbGet() {
+    return new Promise(function (res) {
+      setTimeout(function () { res(null); }, 2500);
+      idbOpen(function (db) {
+        if (!db) { res(null); return; }
+        try {
+          var rq = db.transaction('kv').objectStore('kv').get(KEY);
+          rq.onsuccess = function () { db.close(); res(rq.result || null); };
+          rq.onerror = function () { db.close(); res(null); };
+        } catch (e) { res(null); }
+      });
+    });
+  }
+  function idbDel() {
+    idbOpen(function (db) { if (!db) return; try { db.transaction('kv', 'readwrite').objectStore('kv')['delete'](KEY); } catch (e) {} });
+  }
+  function fixState(s) {
+    s.notes = s.notes || {}; s.wa = s.wa || {}; s.cc = s.cc || ''; s.msg = s.msg || '';
+    if (s.last == null) s.last = -1;
+    return s;
+  }
+
+  function toast(msg, ms) {
+    var t = $('toast');
+    t.textContent = msg; t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.hidden = true; }, ms || 3500);
+  }
+
+  function show(view) {
+    ['v-home', 'v-upload', 'v-map', 'v-work'].forEach(function (id) { $(id).hidden = (id !== view); });
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- reading the Excel file ---------- */
+  function handleFile(file) {
+    if (!file) return;
+    if (!window.XLSX) { toast('تعذّر تحميل أداة قراءة الإكسل. تأكد من الاتصال بالإنترنت ثم أعد فتح الصفحة.', 6000); return; }
+    var r = new FileReader();
+    r.onerror = function () { toast('تعذّرت قراءة الملف.'); };
+    r.onload = function (e) {
+      try {
+        var wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+        var ws = wb.Sheets[wb.SheetNames[0]];
+        var aoa = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, defval: '' });
+        var clean = aoa.map(function (row) {
+          return row.map(function (c) { return String(c == null ? '' : c).trim(); });
+        }).filter(function (row) {
+          return row.some(function (c) { return c !== ''; });
+        });
+        if (clean.length < 2) { toast('الملف فارغ أو فيه صف عناوين فقط.'); return; }
+        var width = 0;
+        clean.forEach(function (row) { if (row.length > width) width = row.length; });
+        var header = [];
+        for (var c = 0; c < width; c++) header.push(clean[0][c] || ('عمود ' + (c + 1)));
+        var rows = clean.slice(1).map(function (row) {
+          var out = [];
+          for (var k = 0; k < width; k++) out.push(row[k] || '');
+          return out;
+        });
+        pending = { file: file.name, header: header, rows: rows };
+        openMapping();
+      } catch (err) {
+        toast('هذا الملف غير مدعوم. جرّب حفظه بصيغة xlsx.', 5000);
+      }
+    };
+    r.readAsArrayBuffer(file);
+  }
+
+  /* ---------- column detection ---------- */
+  function phoneScore(rows, col) {
+    var n = Math.min(rows.length, 30), ok = 0;
+    for (var i = 0; i < n; i++) {
+      var d = (rows[i][col] || '').replace(/\D/g, '').length;
+      if (d >= 7 && d <= 15) ok++;
+    }
+    return n ? ok / n : 0;
+  }
+  function detect(header, rows) {
+    var phone = -1, best = 0, i;
+    var phoneRe = /رقم|هاتف|جوال|موبايل|محمول|تليفون|phone|mobile|tel|cell|number|contact/i;
+    for (i = 0; i < header.length; i++) {
+      var sc = phoneScore(rows, i);
+      if (phoneRe.test(header[i]) && sc >= 0.5) { phone = i; break; }
+      if (sc > best) { best = sc; if (sc >= 0.5) phone = i; }
+    }
+    var name = -1;
+    var nameRe = /اسم|name|عميل|customer|client|مشترك|subscriber/i;
+    for (i = 0; i < header.length; i++) { if (i !== phone && nameRe.test(header[i])) { name = i; break; } }
+    if (name < 0) { for (i = 0; i < header.length; i++) { if (i !== phone) { name = i; break; } } }
+    var type = -1;
+    var typeRe = /اشتراك|باقة|نوع|خدمة|plan|type|subscription|package|service/i;
+    for (i = 0; i < header.length; i++) { if (i !== phone && i !== name && typeRe.test(header[i])) { type = i; break; } }
+    var note = -1;
+    var noteRe = /ملاحظ|تعليق|تفاصيل|note|comment|remark/i;
+    for (i = 0; i < header.length; i++) { if (i !== phone && i !== name && i !== type && noteRe.test(header[i])) { note = i; break; } }
+    return { name: name, phone: phone, type: type, note: note };
+  }
+
+  function fillSelect(sel, header, value, optional) {
+    sel.innerHTML = '';
+    if (optional) {
+      var o0 = document.createElement('option'); o0.value = '-1'; o0.textContent = 'بدون'; sel.appendChild(o0);
+    } else if (value < 0) {
+      var o1 = document.createElement('option'); o1.value = '-1'; o1.textContent = 'اختر العمود'; sel.appendChild(o1);
+    }
+    header.forEach(function (h, i) {
+      var o = document.createElement('option'); o.value = String(i); o.textContent = h; sel.appendChild(o);
+    });
+    sel.value = String(value);
+  }
+
+  function openMapping() {
+    var d = detect(pending.header, pending.rows);
+    $('map-info').textContent = 'تم العثور على ' + pending.rows.length + ' سطرًا في «' + pending.file + '». تأكد أن الأعمدة صحيحة.';
+    fillSelect($('m-name'), pending.header, d.name, false);
+    fillSelect($('m-phone'), pending.header, d.phone, false);
+    fillSelect($('m-type'), pending.header, d.type, true);
+    fillSelect($('m-note'), pending.header, d.note, true);
+    updatePreview();
+    show('v-map');
+  }
+  function updatePreview() {
+    var n = +$('m-name').value, p = +$('m-phone').value, t = +$('m-type').value, r = pending.rows[0];
+    var parts = [];
+    if (n >= 0) parts.push(r[n]);
+    if (p >= 0) parts.push(r[p]);
+    if (t >= 0) parts.push(r[t]);
+    $('m-preview').textContent = 'مثال من أول سطر: ' + parts.filter(Boolean).join(' • ');
+  }
+
+  function startWork() {
+    var n = +$('m-name').value, p = +$('m-phone').value, t = +$('m-type').value;
+    if (n < 0 || p < 0) { toast('اختر عمود الاسم وعمود الهاتف أولًا.'); return; }
+    if (n === p) { toast('عمود الاسم وعمود الهاتف يجب أن يكونا مختلفين.'); return; }
+    state = { file: pending.file, header: pending.header, rows: pending.rows, map: { name: n, phone: p, type: t, note: +$('m-note').value }, st: {}, notes: {}, wa: {}, last: -1, cc: $('m-cc').value.replace(/\D/g, ''), msg: $('m-msg').value };
+    pending = null; filter = 'all';
+    lsSet();
+    enterWork();
+  }
+
+  /* ---------- work view ---------- */
+  function hhmm() {
+    var d = new Date();
+    return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  }
+  function counts() {
+    var c = { yes: 0, no: 0, na: 0, cb: 0 };
+    Object.keys(state.st).forEach(function (k) { c[state.st[k].s]++; });
+    c.called = c.yes + c.no + c.na + c.cb;
+    c.total = state.rows.length;
+    return c;
+  }
+  function setStatus(i, s) {
+    var cur = state.st[i];
+    var undo = cur && cur.s === s;
+    if (undo) delete state.st[i];
+    else {
+      state.st[i] = { s: s, t: hhmm() };
+      var now = Date.now(); if (!state.t0) state.t0 = now; state.t1 = now;
+    }
+    state.last = -1;
+    lsSet();
+    render();
+    if (!undo) { buzz(18); if (!cur) celebrate(); goNext(i); }
+  }
+  function focusCard(i) {
+    var el = document.querySelector('[data-i="' + i + '"]');
+    if (!el) return;
+    el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    el.classList.add('hl');
+    setTimeout(function () { el.classList.remove('hl'); }, 2200);
+  }
+  function goNext(from) {
+    var n = -1, k;
+    for (k = from + 1; k < state.rows.length; k++) if (!state.st[k]) { n = k; break; }
+    if (n < 0) for (k = 0; k < from; k++) if (!state.st[k]) { n = k; break; }
+    if (n >= 0) focusCard(n);
+  }
+  function dial(raw) {
+    var t = (raw || '').trim(), digits = t.replace(/\D/g, '');
+    if (!digits) return { tel: '', wa: '' };
+    var cc = state.cc || '', plus = t.charAt(0) === '+', zz = digits.indexOf('00') === 0, intl;
+    if (plus) intl = digits;
+    else if (zz) intl = digits.slice(2);
+    else if (cc && digits.charAt(0) === '0') intl = cc + digits.slice(1);
+    else if (cc && digits.indexOf(cc) !== 0) intl = cc + digits;
+    else if (cc) intl = digits;
+    else return { tel: t.replace(/[^\d+]/g, ''), wa: digits.replace(/^0+/, '') };
+    return { tel: '+' + intl, wa: intl };
+  }
+
+  function svgPhone() {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>';
+  }
+
+  function buildCard(i) {
+    var row = state.rows[i], m = state.map, st = state.st[i];
+    var card = document.createElement('article');
+    card.className = 'card' + (st ? ' s-' + st.s : '');
+    card.setAttribute('data-i', i);
+
+    var top = document.createElement('div'); top.className = 'top';
+    var who = document.createElement('div'); who.className = 'who';
+    var h = document.createElement('h3'); h.className = 'name'; h.textContent = row[m.name] || '(بدون اسم)';
+    who.appendChild(h);
+    var meta = document.createElement('div'); meta.className = 'meta';
+    if (m.type >= 0 && row[m.type]) {
+      var pl = document.createElement('span'); pl.className = 'plan'; pl.textContent = row[m.type]; meta.appendChild(pl);
+    }
+    var ph = document.createElement('span'); ph.className = 'ph'; ph.textContent = row[m.phone]; meta.appendChild(ph);
+    if (state.wa[i]) { var wb = document.createElement('span'); wb.className = 'badge-wa'; wb.textContent = '✓ واتساب ' + state.wa[i]; meta.appendChild(wb); }
+    who.appendChild(meta);
+    top.appendChild(who);
+
+    var dl = dial(row[m.phone]);
+    var call = document.createElement('a');
+    call.className = 'call';
+    if (dl.tel) call.href = 'tel:' + dl.tel; else call.setAttribute('aria-disabled', 'true');
+    call.addEventListener('click', function () { state.last = i; lsSet(); });
+    call.setAttribute('aria-label', 'اتصال بـ ' + (row[m.name] || ''));
+    call.innerHTML = svgPhone() + '<span>اتصال</span>';
+    top.appendChild(call);
+    card.appendChild(top);
+    var hasX = m.note >= 0, xAdd = null;
+    if (hasX) {
+      var xn = document.createElement('label'); xn.className = 'xnote';
+      var xb = document.createElement('b'); xb.textContent = 'ملاحظة المشترك';
+      var xt = document.createElement('textarea'); xt.rows = 2; xt.value = row[m.note] || ''; xt.placeholder = 'اكتب ملاحظة...';
+      var fit = function () { xt.style.height = 'auto'; xt.style.height = xt.scrollHeight + 'px'; };
+      xt.addEventListener('input', function () { row[m.note] = xt.value; fit(); lsSet(); });
+      xn.appendChild(xb); xn.appendChild(xt); card.appendChild(xn);
+      if (xt.value) { setTimeout(fit, 0); }
+      else {
+        xn.hidden = true;
+        xAdd = document.createElement('button');
+        xAdd.type = 'button'; xAdd.className = 'act note'; xAdd.textContent = 'إضافة ملاحظة';
+        xAdd.addEventListener('click', function () { xn.hidden = false; xAdd.hidden = true; fit(); xt.focus(); });
+      }
+    }
+
+    var acts = document.createElement('div'); acts.className = 'acts';
+    [['no', 'رفض'], ['yes', 'وافق'], ['na', 'لم يرد'], ['cb', 'لاحقاً']].forEach(function (a) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'act ' + a[0];
+      b.setAttribute('aria-pressed', st && st.s === a[0] ? 'true' : 'false');
+      var dot = document.createElement('span'); dot.className = 'dot';
+      b.appendChild(dot);
+      b.appendChild(document.createTextNode(a[1]));
+      b.addEventListener('click', function () { setStatus(i, a[0]); });
+      acts.appendChild(b);
+    });
+    if (dl.wa) {
+      var w = document.createElement('a');
+      w.className = 'act wa'; w.target = '_blank'; w.rel = 'noopener';
+      w.textContent = 'واتساب';
+      w.href = 'https://wa.me/' + dl.wa + '?text=' + encodeURIComponent((state.msg || '').replace(/\{الاسم\}/g, row[m.name] || ''));
+      w.addEventListener('click', function () { state.wa[i] = hhmm(); lsSet(); setTimeout(render, 500); });
+      acts.appendChild(w);
+    }
+    var nb = document.createElement('button');
+    nb.type = 'button'; nb.className = 'act note'; nb.textContent = state.notes[i] ? 'ملاحظة ●' : 'ملاحظة';
+    if (!hasX) acts.appendChild(nb); else if (xAdd) acts.appendChild(xAdd);
+    if (st) {
+      var stamp = document.createElement('span'); stamp.className = 'stamp'; stamp.textContent = st.t;
+      acts.appendChild(stamp);
+    }
+    card.appendChild(acts);
+    var nr = document.createElement('div'); nr.className = 'note-row'; nr.hidden = !state.notes[i];
+    var ni = document.createElement('input'); ni.type = 'text'; ni.placeholder = 'ملاحظة عن العميل'; ni.value = state.notes[i] || '';
+    ni.addEventListener('input', function () {
+      if (ni.value) state.notes[i] = ni.value; else delete state.notes[i];
+      nb.textContent = ni.value ? 'ملاحظة ●' : 'ملاحظة'; lsSet();
+    });
+    nr.appendChild(ni); if (!hasX) card.appendChild(nr);
+    nb.addEventListener('click', function () { nr.hidden = !nr.hidden; if (!nr.hidden) ni.focus(); });
+    return card;
+  }
+
+  function render() {
+    var c = counts();
+    var sub = 'تم الاتصال بـ ' + c.called + ' من ' + c.total;
+    if (c.called >= 5 && c.called < c.total && state.t0 && Date.now() - state.t0 < 43200000) {
+      sub += ' • المتبقي نحو ' + fmtMins(Math.round((c.total - c.called) * ((Date.now() - state.t0) / 60000) / c.called));
+    }
+    $('w-sub').textContent = sub;
+    document.querySelector('.prog').classList.toggle('done', c.total > 0 && c.called === c.total);
+    $('p-yes').style.width = (c.yes / c.total * 100) + '%';
+    $('p-no').style.width = (c.no / c.total * 100) + '%';
+    $('p-na').style.width = (c.na / c.total * 100) + '%';
+    $('p-cb').style.width = (c.cb / c.total * 100) + '%';
+
+    var chips = $('chips'); chips.innerHTML = '';
+    [['all', 'الكل', c.total, ''], ['todo', 'المتبقي', c.total - c.called, ''],
+     ['yes', 'وافق', c.yes, 'yes'], ['no', 'رفض', c.no, 'no'], ['na', 'لم يرد', c.na, 'na'], ['cb', 'لاحقاً', c.cb, 'cb']].forEach(function (f) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'chip';
+      b.setAttribute('aria-pressed', filter === f[0] ? 'true' : 'false');
+      if (f[3]) { var d = document.createElement('span'); d.className = 'dot ' + f[3]; b.appendChild(d); }
+      b.appendChild(document.createTextNode(f[1] + ' '));
+      var n = document.createElement('b'); n.textContent = f[2]; b.appendChild(n);
+      b.addEventListener('click', function () { filter = f[0]; render(); });
+      chips.appendChild(b);
+    });
+
+    var list = $('list'); list.innerHTML = '';
+    var shown = 0;
+    for (var i = 0; i < state.rows.length; i++) {
+      var st = state.st[i];
+      var ok = filter === 'all' || (filter === 'todo' && !st) || (st && st.s === filter);
+      if (ok && q) { var rr = state.rows[i]; ok = (rr[state.map.name] + ' ' + rr[state.map.phone]).toLowerCase().indexOf(q) >= 0; }
+      if (!ok) continue;
+      list.appendChild(buildCard(i)); shown++;
+    }
+    if (!shown) {
+      var e = document.createElement('div'); e.className = 'empty';
+      e.textContent = filter === 'todo' ? 'انتهيت من كل الأسماء. يمكنك تصدير النتائج من الأسفل.' : 'لا توجد أسماء في هذا القسم.';
+      list.appendChild(e);
+    }
+  }
+
+  function enterWork() {
+    resetArmed = false; $('w-reset').textContent = 'بدء بملف جديد';
+    show('v-work');
+    render();
+    setTimeout(function () {
+      if (state.last >= 0 && !state.st[state.last]) focusCard(state.last);
+      else goNext(-1);
+    }, 150);
+  }
+
+  /* ---------- export ---------- */
+  var LABEL = { yes: 'وافق على الاشتراك', no: 'لم يوافق', na: 'لم يرد', cb: 'اتصل لاحقاً' };
+  var TINT = { yes: 'FFD9F2E3', no: 'FFFBDAD8', na: 'FFFCEFC0', cb: 'FFDCE8FA' };
+  var STRONG = { yes: 'FF14905A', no: 'FFD0433D', na: 'FFF0B429', cb: 'FF2F6FD6' };
+  var STRONG_FONT = { yes: 'FFFFFFFF', no: 'FFFFFFFF', na: 'FF2B1E00', cb: 'FFFFFFFF' };
+
+  async function doExport() {
+    if (!window.ExcelJS) { toast('تعذّر تحميل أداة إنشاء الإكسل. تأكد من الاتصال بالإنترنت.', 6000); return; }
+    var includeAll = $('inc-all').checked;
+    var idx = [];
+    for (var i = 0; i < state.rows.length; i++) { if (includeAll || state.st[i]) idx.push(i); }
+    if (!idx.length) { toast('لا يوجد أحد لتصديره بعد. سجّل نتيجة اتصال واحدة على الأقل.'); return; }
+
+    var dl = null;
+    try { if (window.claude && window.claude.use) dl = await window.claude.use('downloads'); } catch (e) { dl = null; }
+
+    try {
+      var wb = new ExcelJS.Workbook();
+      var ws = wb.addWorksheet('نتائج الاتصال', { views: [{ rightToLeft: true, state: 'frozen', ySplit: 1 }] });
+      var head = state.header.concat(['نتيجة الاتصال', 'وقت الاتصال']).concat(state.map.note >= 0 ? [] : ['ملاحظات']).concat(['واتساب']);
+      var hr = ws.addRow(head);
+      var thin = { style: 'thin', color: { argb: 'FFD0D7E2' } };
+      var border = { top: thin, left: thin, bottom: thin, right: thin };
+      hr.eachCell(function (cell) {
+        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF142033' } };
+        cell.alignment = { horizontal: 'center', vertical: 'middle' };
+        cell.border = border;
+      });
+
+      var widths = head.map(function (h) { return String(h).length; });
+      idx.forEach(function (ri) {
+        var st = state.st[ri];
+        var vals = state.rows[ri].concat([st ? LABEL[st.s] : 'لم يُتصل به', st ? st.t : '']).concat(state.map.note >= 0 ? [] : [state.notes[ri] || '']).concat([state.wa[ri] || '']);
+        var r = ws.addRow(vals);
+        vals.forEach(function (v, k) { var l = String(v).length; if (l > widths[k]) widths[k] = l; });
+        r.eachCell({ includeEmpty: true }, function (cell, col) {
+          cell.alignment = { horizontal: 'right', vertical: 'middle' };
+          cell.border = border;
+          if (st) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: TINT[st.s] } };
+        });
+        if (st) {
+          var nc = r.getCell(state.map.name + 1);
+          nc.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: STRONG[st.s] } };
+          nc.font = { bold: true, color: { argb: STRONG_FONT[st.s] } };
+        }
+      });
+      widths.forEach(function (w, k) { ws.getColumn(k + 1).width = Math.max(12, Math.min(42, w + 4)); });
+
+      var buf = await wb.xlsx.writeBuffer();
+      var blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      var d = new Date();
+      var stamp = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      var fname = 'call-results-' + stamp + '.xlsx';
+      if (dl) {
+        var res = await dl.save({ filename: fname, data: blob });
+        if (res && res.status === 'saved') toast('تم تجهيز الملف (' + idx.length + ' سطرًا).');
+      } else {
+        // Standalone hosting (GitHub Pages, local file, ...): normal browser download
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url; a.download = fname; a.style.display = 'none';
+        document.body.appendChild(a); a.click();
+        setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 10000);
+        toast('تم تنزيل الملف (' + idx.length + ' سطرًا). ابحث عنه في التنزيلات.', 5000);
+      }
+    } catch (err) {
+      if (err && err.code === 'declined') return;
+      toast('تعذّر إنشاء الملف. حاول مرة أخرى.', 5000);
+    }
+  }
+
+  /* ---------- wiring ---------- */
+  var drop = $('drop');
+  $('file').addEventListener('change', function (e) { handleFile(e.target.files[0]); e.target.value = ''; });
+  ['dragenter', 'dragover'].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('over'); });
+  });
+  ['dragleave', 'drop'].forEach(function (ev) {
+    drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('over'); });
+  });
+  drop.addEventListener('drop', function (e) { handleFile(e.dataTransfer.files[0]); });
+
+  ['m-name', 'm-phone', 'm-type'].forEach(function (id) { $(id).addEventListener('change', updatePreview); });
+  $('m-start').addEventListener('click', startWork);
+  $('m-back').addEventListener('click', function () { pending = null; updateHome(); show('v-home'); });
+
+  $('w-export').addEventListener('click', doExport);
+  $('w-export-top').addEventListener('click', doExport);
+  $('w-reset').addEventListener('click', function () {
+    var b = $('w-reset');
+    if (!resetArmed) {
+      resetArmed = true; b.textContent = 'اضغط مرة أخرى للتأكيد (سيُحذف التقدم)';
+      setTimeout(function () { resetArmed = false; b.textContent = 'بدء بملف جديد'; }, 4000);
+      return;
+    }
+    lsDel(); deleteRemote(); state = null; resetArmed = false; b.textContent = 'بدء بملف جديد';
+    updateHome(); show('v-home');
+  });
+
+  $('q').addEventListener('input', function (e) { q = e.target.value.trim().toLowerCase(); if (state) render(); });
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden && state && state.last >= 0 && !state.st[state.last] && !$('v-work').hidden) {
+      q = ''; $('q').value = ''; filter = 'all'; render(); focusCard(state.last);
+    }
+  });
+
+  function restoreFrom(e) {
+    var f = e.target.files[0]; e.target.value = ''; if (!f) return;
+    var r = new FileReader();
+    r.onload = function () {
+      try {
+        var s = JSON.parse(r.result);
+        if (!s || !s.rows || !s.map || !s.st) throw new Error('bad');
+        state = fixState(s); filter = 'all'; lsSet(); enterWork(); toast('تمت استعادة النسخة.');
+      } catch (err) { toast('ملف النسخة غير صالح.'); }
+    };
+    r.readAsText(f);
+  }
+  $('w-restore').addEventListener('change', restoreFrom);
+  $('h-restore').addEventListener('change', restoreFrom);
+  $('h-upload').addEventListener('click', function () { $('h-file').click(); });
+  $('h-file').addEventListener('change', function (e) { handleFile(e.target.files[0]); e.target.value = ''; });
+  $('h-calls').addEventListener('click', function () {
+    if (!state) { toast('لا توجد قائمة بعد. ارفع ملف الإكسل أولاً.'); return; }
+    enterWork();
+  });
+  $('w-home').addEventListener('click', function () { updateHome(); show('v-home'); });
+  $('u-restore').addEventListener('change', restoreFrom);
+  $('w-backup').addEventListener('click', async function () {
+    if (!state) return;
+    var blob = new Blob([JSON.stringify(state)], { type: 'application/json' });
+    var fname = 'calllist-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+    var dl = null;
+    try { if (window.claude && window.claude.use) dl = await window.claude.use('downloads'); } catch (e) { dl = null; }
+    try {
+      if (dl) {
+        var res = await dl.save({ filename: fname, data: blob });
+        if (res && res.status) toast('تم حفظ النسخة الاحتياطية.');
+      } else {
+        var url = URL.createObjectURL(blob), a = document.createElement('a');
+        a.href = url; a.download = fname; a.style.display = 'none';
+        document.body.appendChild(a); a.click();
+        setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 10000);
+        toast('تم تنزيل النسخة الاحتياطية.');
+      }
+    } catch (err) { if (!(err && err.code === 'declined')) toast('تعذّر حفظ النسخة.'); }
+  });
+  // save again whenever the page is hidden or closed
+  document.addEventListener('visibilitychange', function () { if (document.hidden) { lsSet('quiet'); pushNow(); } });
+  window.addEventListener('pagehide', function () { lsSet('quiet'); pushNow(); });
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
+
+  /* ---------- sync between devices (db capability) ---------- */
+  var syncRef = null, syncMode = 'off', localOk = true, pushT = null, pushing = false, dirty = false, firstSnap = true;
+  function queuePush() { if (!syncRef) return; dirty = true; clearTimeout(pushT); pushT = setTimeout(pushNow, 1500); }
+  function pushNow() {
+    clearTimeout(pushT);
+    if (!syncRef || !state || !dirty || pushing) return;
+    var json = JSON.stringify(state);
+    if (json.length > 230000) { syncMode = 'big'; setSaveUi(localOk); return; }
+    dirty = false; pushing = true;
+    syncRef.set({ ts: state.ts || 0, json: json }).then(function () {
+      pushing = false; syncMode = 'ok'; setSaveUi(localOk); if (dirty) pushNow();
+    }, function () { pushing = false; dirty = true; syncMode = 'err'; setSaveUi(localOk); });
+  }
+  function deleteRemote() { if (syncRef) syncRef['delete']().then(null, function () {}); }
+  function onRemote(snap) {
+    if (snap.metadata && (snap.metadata.fromCache || snap.metadata.hasPendingWrites)) return;
+    var first = firstSnap; firstSnap = false;
+    var d = snap.exists ? snap.data() : null, remote = null;
+    if (d && d.json) { try { remote = JSON.parse(d.json); } catch (e) {} }
+    if (!remote || !remote.rows || !remote.map) {
+      if (first && state) { dirty = true; pushNow(); }
+      return;
+    }
+    var mine = state ? (state.ts || 0) : -1;
+    if ((remote.ts || 0) > mine) {
+      var hadWork = !!state && !$('v-work').hidden;
+      state = fixState(remote); filter = 'all';
+      lsSet('remote');
+      if (!$('v-work').hidden) render(); else updateHome();
+      if (hadWork) toast('تم تحديث القائمة من جهاز آخر.');
+    } else if ((remote.ts || 0) < mine) { dirty = true; pushNow(); }
+    syncMode = 'ok'; setSaveUi(localOk);
+  }
+  async function initSync() {
+    try {
+      if (!window.claude || !window.claude.use) return;
+      var db = await window.claude.use('db'), user = await window.claude.use('user');
+      if (!db || !user) return;
+      var uid = await user.id();
+      if (!uid) return;
+      syncRef = db.doc('data/users/' + uid + '/calllist');
+      syncMode = 'ok'; setSaveUi(localOk);
+      syncRef.onSnapshot(onRemote, function () { syncMode = 'err'; setSaveUi(localOk); });
+    } catch (e) { syncRef = null; }
+  }
+
+  /* ---------- fun: vibration, confetti, milestones ---------- */
+  function buzz(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} }
+  function confetti() {
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var cols = ['#14905A', '#F0B429', '#D0433D', '#1E4E9C', '#8E44AD'];
+    for (var k = 0; k < 30; k++) {
+      var d = document.createElement('i'); d.className = 'cf';
+      d.style.left = (Math.random() * 100) + 'vw'; d.style.background = cols[k % cols.length];
+      d.style.animationDelay = (Math.random() * 0.5) + 's';
+      document.body.appendChild(d);
+      setTimeout(d.remove.bind(d), 3000);
+    }
+  }
+  function celebrate() {
+    var c = counts(), msgs = ['ممتاز، استمر', 'أداء رائع', 'تتقدم بسرعة', 'لا تتوقف الآن', 'شغل ممتاز'];
+    if (c.called === c.total) {
+      buzz([40, 60, 40, 60, 90]); confetti();
+      toast('انتهيت من كل القائمة! عمل رائع اليوم.', 4000);
+      setTimeout(openSummary, 1800);
+    } else if (c.total >= 20 && c.called === Math.floor(c.total / 2)) {
+      buzz([30, 40, 30]); confetti(); toast('وصلت إلى نصف الطريق!', 3000);
+    } else if (c.called % 10 === 0) {
+      buzz([30, 40, 30]); toast(c.called + ' اتصالاً. ' + msgs[(c.called / 10) % msgs.length], 2500);
+    }
+  }
+
+  /* ---------- end-of-day summary ---------- */
+  function fmtMins(m) {
+    if (!m) return '—';
+    var h = Math.floor(m / 60), r = m % 60;
+    return h ? h + ' س ' + r + ' د' : r + ' د';
+  }
+  function dateStr() { try { return new Date().toLocaleDateString('ar', { weekday: 'long', day: 'numeric', month: 'long' }); } catch (e) { return new Date().toLocaleDateString(); } }
+  function stats() {
+    var c = counts(), dec = c.yes + c.no;
+    var mins = state.t0 && state.t1 ? Math.max(1, Math.round((state.t1 - state.t0) / 60000)) : 0;
+    return { c: c, rate: dec ? Math.round(c.yes / dec * 100) : 0, mins: mins, perHour: mins ? Math.round(c.called / (mins / 60)) : 0 };
+  }
+  function summaryText() {
+    var s = stats(), c = s.c;
+    return 'ملخص اتصالات ' + dateStr() + '\nالمتصل بهم: ' + c.called + ' من ' + c.total +
+      '\nوافق: ' + c.yes + '\nرفض: ' + c.no + '\nلم يرد: ' + c.na + '\nلاحقاً: ' + c.cb +
+      '\nنسبة الموافقة: ' + s.rate + '%\nمدة العمل: ' + fmtMins(s.mins) + '\nالسرعة: ' + s.perHour + ' اتصال/ساعة';
+  }
+  function openSummary() {
+    if (!state || !counts().called) { toast('سجّل نتيجة اتصال واحدة على الأقل.'); return; }
+    var s = stats(), c = s.c;
+    $('sum-when').textContent = dateStr();
+    $('sum-body').innerHTML = '<div class="big-n">' + c.called + ' / ' + c.total + '</div>' +
+      '<div class="stats"><div class="stat yes"><b>' + c.yes + '</b><span>وافق</span></div>' +
+      '<div class="stat no"><b>' + c.no + '</b><span>رفض</span></div>' +
+      '<div class="stat na"><b>' + c.na + '</b><span>لم يرد</span></div>' +
+      '<div class="stat cb"><b>' + c.cb + '</b><span>لاحقاً</span></div></div>' +
+      '<ul class="lines"><li><span>نسبة الموافقة</span><b>' + s.rate + '%</b></li>' +
+      '<li><span>مدة العمل</span><b>' + fmtMins(s.mins) + '</b></li>' +
+      '<li><span>السرعة</span><b>' + s.perHour + ' اتصال/ساعة</b></li></ul>';
+    $('sum').hidden = false;
+  }
+  function rrect(x, a, b, w, h, r) {
+    x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r);
+    x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); x.fill();
+  }
+  async function summaryImage() {
+    try { await document.fonts.load('700 40px "IBM Plex Sans Arabic"'); } catch (e) {}
+    var s = stats(), c = s.c, W = 800, H = 980, cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    var x = cv.getContext('2d'), F = '"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif';
+    x.direction = 'rtl'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillStyle = '#F2F5F9'; x.fillRect(0, 0, W, H);
+    x.fillStyle = '#1E4E9C'; x.fillRect(0, 0, W, 250);
+    x.fillStyle = '#fff'; x.font = '700 46px ' + F; x.fillText('ملخص اتصالات اليوم', W / 2, 80);
+    x.font = '400 28px ' + F; x.fillText(dateStr(), W / 2, 135);
+    x.font = '700 70px ' + F; x.fillText(c.called + ' / ' + c.total, W / 2, 200);
+    [['وافق', c.yes, '#14905A'], ['رفض', c.no, '#D0433D'], ['لم يرد', c.na, '#F0B429'], ['لاحقاً', c.cb, '#2F6FD6']].forEach(function (b, k) {
+      var bx = 40 + (k % 2) * 370, by = 290 + Math.floor(k / 2) * 200;
+      x.fillStyle = b[2]; rrect(x, bx, by, 350, 170, 24);
+      x.fillStyle = k === 2 ? '#2B1E00' : '#fff';
+      x.font = '700 76px ' + F; x.fillText(String(b[1]), bx + 175, by + 75);
+      x.font = '500 30px ' + F; x.fillText(b[0], bx + 175, by + 135);
+    });
+    x.fillStyle = '#142033'; x.font = '600 32px ' + F;
+    x.fillText('نسبة الموافقة: ' + s.rate + '%', W / 2, 740);
+    x.fillText('مدة العمل: ' + fmtMins(s.mins), W / 2, 805);
+    x.fillText('السرعة: ' + s.perHour + ' اتصال/ساعة', W / 2, 870);
+    return new Promise(function (res) { cv.toBlob(res, 'image/png'); });
+  }
+  async function shareImage() {
+    var blob = await summaryImage();
+    if (!blob) { toast('تعذّر إنشاء الصورة.'); return; }
+    var fname = 'summary-' + new Date().toISOString().slice(0, 10) + '.png';
+    try {
+      var file = new File([blob], fname, { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file] }); return; }
+    } catch (e) { if (e && e.name === 'AbortError') return; }
+    var dl = null;
+    try { if (window.claude && window.claude.use) dl = await window.claude.use('downloads'); } catch (e) { dl = null; }
+    try {
+      if (dl) { var r = await dl.save({ filename: fname, data: blob }); if (r && r.status) toast('تم حفظ الصورة.'); }
+      else {
+        var url = URL.createObjectURL(blob), a = document.createElement('a');
+        a.href = url; a.download = fname; a.style.display = 'none';
+        document.body.appendChild(a); a.click();
+        setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 10000);
+        toast('تم تنزيل الصورة.');
+      }
+    } catch (err) { if (!(err && err.code === 'declined')) toast('تعذّر حفظ الصورة.'); }
+  }
+  $('w-sum').addEventListener('click', openSummary);
+  $('sum-close').addEventListener('click', function () { $('sum').hidden = true; });
+  $('sum').addEventListener('click', function (e) { if (e.target === $('sum')) $('sum').hidden = true; });
+  $('sum-share').addEventListener('click', shareImage);
+  $('sum-text').addEventListener('click', async function () {
+    var t = summaryText();
+    try { if (navigator.share) { await navigator.share({ text: t }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+    try { await navigator.clipboard.writeText(t); toast('تم نسخ الملخص.'); } catch (e) { toast('تعذّر النسخ.'); }
+  });
+
+  function updateHome() {
+    var el = $('h-sub');
+    if (state && state.rows) {
+      var c = counts();
+      el.textContent = 'ملف «' + state.file + '»: تم الاتصال بـ ' + c.called + ' من ' + c.total;
+    } else {
+      el.textContent = 'لا توجد قائمة بعد. ارفع ملف الإكسل للبدء.';
+    }
+  }
+
+  /* ---------- boot ---------- */
+  Promise.all([Promise.resolve(lsGet()), idbGet()]).then(function (r) {
+    var a = r[0], b = r[1];
+    var saved = (a && b) ? ((b.ts || 0) > (a.ts || 0) ? b : a) : (a || b);
+    if (saved && saved.rows && saved.rows.length && saved.map) {
+    state = saved;
+    state.notes = state.notes || {}; state.wa = state.wa || {}; state.cc = state.cc || ''; state.msg = state.msg || ''; if (state.last == null) state.last = -1;
+    lsSet('quiet');
+    }
+    updateHome();
+    initSync();
+  });
+})();
+</script>
+</body>
+</html>
